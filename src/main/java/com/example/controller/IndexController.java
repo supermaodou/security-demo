@@ -1,13 +1,19 @@
 package com.example.controller;
 
+import com.example.security.MyUserDetailsManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 public class IndexController {
+
+    @Autowired
+    MyUserDetailsManager userDetailsManager;
 
 //    @GetMapping({"/", "/index"})
 //    public String index() {
@@ -29,4 +35,9 @@ public class IndexController {
         return "404";
     }
 
+    @PostMapping("/add")
+    public void add() {
+        UserDetails build = User.builder().username("aaa").password("aaa").build();
+        userDetailsManager.createUser(build);
+    }
 }
