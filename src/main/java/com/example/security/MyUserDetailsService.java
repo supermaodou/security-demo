@@ -17,25 +17,25 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 //@Service
-public class MyUserDetailsService implements UserDetailsService {
-
-    private static final Logger log = LoggerFactory.getLogger(MyUserDetailsService.class);
-
-    // 在这个类里面注入service，然后调用service的方法，获取用户信息
-    @Resource
-    private UserService userService;
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(SysUser::getUsername, username);
-        SysUser loginSysUser = userService.getOne(queryWrapper);
-        if (loginSysUser == null) {
-            log.info("登录用户：{} 不存在.", username);
-            throw new UsernameNotFoundException("用户不存在");
-        }
-        List<GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList("ADMIN");
-        return new User(loginSysUser.getUsername(), loginSysUser.getPassword(), true, true, true, true, authorities);
-    }
-
-}
+//public class MyUserDetailsService implements UserDetailsService {
+//
+//    private static final Logger log = LoggerFactory.getLogger(MyUserDetailsService.class);
+//
+//    // 在这个类里面注入service，然后调用service的方法，获取用户信息
+//    @Resource
+//    private UserService userService;
+//
+//    @Override
+//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
+//        queryWrapper.eq(SysUser::getUsername, username);
+//        SysUser loginSysUser = userService.getOne(queryWrapper);
+//        if (loginSysUser == null) {
+//            log.info("登录用户：{} 不存在.", username);
+//            throw new UsernameNotFoundException("用户不存在");
+//        }
+//        List<GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList("ADMIN");
+//        return new User(loginSysUser.getUsername(), loginSysUser.getPassword(), true, true, true, true, authorities);
+//    }
+//
+//}

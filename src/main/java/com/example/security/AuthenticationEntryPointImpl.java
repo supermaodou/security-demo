@@ -29,6 +29,7 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint, S
     {
         response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         response.setContentType("application/json;charset=utf-8");
+        response.getWriter().println("没有权限！");
         response.getWriter().write(new ObjectMapper().writeValueAsString(exception.getMessage()));
     }
 }

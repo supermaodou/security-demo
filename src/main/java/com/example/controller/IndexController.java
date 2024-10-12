@@ -12,32 +12,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class IndexController {
 
-    @Autowired
-    MyUserDetailsManager userDetailsManager;
+    @GetMapping({"/", "/index"})
+    public String index() {
+        return "index";
+    }
 
-//    @GetMapping({"/", "/index"})
-//    public String index() {
-//        return "index";
+//    @GetMapping("index")
+//    public Object index(Authentication authentication) {
+//        return authentication;
 //    }
 
-    @GetMapping("index")
-    public Object index(Authentication authentication) {
-        return authentication;
+
+    @GetMapping("/error")
+    public String error() {
+        return "error";
     }
 
-//    @RequestMapping("/login")
-//    public String login() {
-//        return "login";
-//    }
 
-    @GetMapping("/404")
-    public String e404() {
-        return "404";
-    }
-
-    @PostMapping("/add")
-    public void add() {
-        UserDetails build = User.builder().username("aaa").password("aaa").build();
-        userDetailsManager.createUser(build);
-    }
 }

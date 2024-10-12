@@ -22,7 +22,7 @@ import java.util.List;
 @Service
 public class MyUserDetailsManager implements UserDetailsManager {
 
-    private static final Logger log = LoggerFactory.getLogger(MyUserDetailsService.class);
+    private static final Logger log = LoggerFactory.getLogger(MyUserDetailsManager.class);
 
     @Resource
     private UserService userService;
