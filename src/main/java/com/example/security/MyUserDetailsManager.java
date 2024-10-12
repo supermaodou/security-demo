@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.example.entity.SysUser;
 import com.example.service.UserService;
 import jakarta.annotation.Resource;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +19,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
 public class MyUserDetailsManager implements UserDetailsManager {
 
-    private static final Logger log = LoggerFactory.getLogger(MyUserDetailsManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(MyUserDetailsManager.class);
 
     @Resource
     private UserService userService;
@@ -32,16 +35,17 @@ public class MyUserDetailsManager implements UserDetailsManager {
 
     @Override
     public void createUser(UserDetails user) {
-        SysUser sysUser = new SysUser(null, user.getUsername(), passwordEncoder.encode(user.getPassword()));
+        SysUser sysUser = new SysUser(null, user.getUsername(), passwordEncoder.encode(user.getPassword()), 0);
         userService.save(sysUser);
     }
 
     @Override
     public void updateUser(UserDetails user) {
-        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(SysUser::getUsername, user.getUsername());
-        queryWrapper.eq(SysUser::getPassword, passwordEncoder.encode(user.getPassword()));
-        userService.update(queryWrapper);
+        LambdaUpdateWrapper<SysUser> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.set(SysUser::getId, 3);
+        updateWrapper.set(SysUser::getUsername, user.getUsername());
+        updateWrapper.set(SysUser::getPassword, passwordEncoder.encode(user.getPassword()));
+        userService.update(updateWrapper);
     }
 
     @Override
@@ -53,6 +57,11 @@ public class MyUserDetailsManager implements UserDetailsManager {
 
     @Override
     public void changePassword(String oldPassword, String newPassword) {
+        // 先对比旧密码
+        if (!passwordEncoder.matches(oldPassword, userService.getById(3).getPassword())) {
+            throw new RuntimeException("旧密码不正确");
+        }
+        // 然后更新密码
         LambdaUpdateWrapper<SysUser> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.set(SysUser::getPassword, newPassword);
         userService.update(updateWrapper);
@@ -72,10 +81,10 @@ public class MyUserDetailsManager implements UserDetailsManager {
         queryWrapper.eq(SysUser::getUsername, username);
         SysUser loginSysUser = userService.getOne(queryWrapper);
         if (loginSysUser == null) {
-            log.info("登录用户：{} 不存在.", username);
+            logger.info("登录用户：{} 不存在.", username);
             throw new UsernameNotFoundException("用户不存在");
         }
-        List<GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList("ADMIN");
+        Collection<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ADMIN", "USER");
         return new User(loginSysUser.getUsername(), loginSysUser.getPassword(), true, true, true, true, authorities);
     }
 }
